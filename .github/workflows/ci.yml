@@ -5,24 +5,36 @@ name: Go
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
+  test:
+    runs-on:
+      ubuntu-latest
 
-  build:
-    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: secret
+          POSTGRES_USER: root
+          POSTGRES_DB: simple_bank_dev
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-    - uses: actions/checkout@v3
+      - name: Check out github actions
+        uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.20'
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.20"
 
-    - name: Build
-      run: go build -v ./...
-
-    - name: Test
-      run: make test
+      - name: Test
+        run: make test
