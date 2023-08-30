@@ -45,7 +45,7 @@ jobs:
           which migrate
 
       - name: Mirgate DB
-        run: migrate -path migration -database $POSTGRES_URI_DEV --verbose up
+        run: migrate -path migration -database "$POSTGRES_URI_DEV" --verbose up
 
       - name: Test
         run: make test
