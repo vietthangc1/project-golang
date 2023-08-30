@@ -13,6 +13,8 @@ jobs:
   test:
     runs-on:
       ubuntu-latest
+    env:
+      POSTGRES_URI_DEV: postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable
 
     services:
       postgres:
@@ -43,7 +45,7 @@ jobs:
           which migrate
 
       - name: Mirgate DB
-        run: make migrateup
+        run: migrate -path migration -database $POSTGRES_URI_DEV --verbose up
 
       - name: Test
         run: make test
