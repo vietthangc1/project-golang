@@ -13,6 +13,7 @@ sql:
     go: 
       package: "db"
       out: "./db/sqlc/"
+      emit_empty_slices: true
   database:
     uri: "postgresql://postgres:postgres@localhost:5432/simple_bank"
   rules:
