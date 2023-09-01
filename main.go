@@ -13,7 +13,7 @@ import (
 var (
 	dbDriver    = "postgres"
 	postgresUri = envx.String("POSTGRES_URI", "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable")
-	address     = "localhost:8080"
+	address     = envx.String("SERVER_HOST", "localhost:8080")
 )
 
 func main() {
