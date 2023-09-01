@@ -56,7 +56,7 @@ type TransferTxResults struct {
 }
 
 // Create a transfer, 2 entries (from and to), update 2 accounts (from and to)
-// nolint:go-staticcheck
+// nolint:gosimple
 func (s *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (*TransferTxResults, error) {
 	var result TransferTxResults
 
