@@ -118,3 +118,7 @@ func createRandomAccount() db.Account {
 		Currency: "VND",
 	}
 }
+
+func TestCreateAccount(t *testing.T) {
+	
+}
