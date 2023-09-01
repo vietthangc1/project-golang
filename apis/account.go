@@ -2,6 +2,7 @@ package apis
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,7 +10,7 @@ import (
 )
 
 type createAccountRequest struct {
-	Owner    string `json:"owner" binding:"required"`
+	Owner string `json:"owner" binding:"required"`
 }
 
 func (s *Server) createAccount(ctx *gin.Context) {
@@ -21,8 +22,8 @@ func (s *Server) createAccount(ctx *gin.Context) {
 	}
 
 	arg := db.CreateAccountParams{
-		Owner: req.Owner,
-		Balance: 0,
+		Owner:    req.Owner,
+		Balance:  0,
 		Currency: "VND",
 	}
 
@@ -36,7 +37,7 @@ func (s *Server) createAccount(ctx *gin.Context) {
 }
 
 type getAccountByIDRequest struct {
-	ID int `uri:"id" bidding:"required,numeric,gte=1"`
+	ID int32 `uri:"id" bidding:"min=1"`
 }
 
 func (s *Server) getAccountByID(ctx *gin.Context) {
@@ -44,6 +45,11 @@ func (s *Server) getAccountByID(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	if req.ID < 1 {
+		ctx.JSON(http.StatusBadRequest, errorResponse(fmt.Errorf("invalid ID")))
 		return
 	}
 
@@ -61,7 +67,7 @@ func (s *Server) getAccountByID(ctx *gin.Context) {
 }
 
 type listAccountsRequest struct {
-	PageNum int32 `form:"page_num" bidding:"required,numeric,gte=1"`
+	PageNum  int32 `form:"page_num" bidding:"required,numeric,gte=1"`
 	PageSize int32 `form:"page_size" bidding:"required,numeric,gte=1"`
 }
 
@@ -74,7 +80,7 @@ func (s *Server) listAccounts(ctx *gin.Context) {
 	}
 
 	arg := db.ListAccountsParams{
-		Limit: req.PageSize,
+		Limit:  req.PageSize,
 		Offset: (req.PageNum - 1) * req.PageSize,
 	}
 
