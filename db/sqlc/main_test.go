@@ -15,7 +15,7 @@ var (
 	dbDriver     = "postgres"
 	postgresUri  = envx.String("POSTGRES_URI_DEV", "postgresql://root:secret@localhost:5432/simple_bank_dev?sslmode=disable")
 	testQueries  *Queries
-	testStore    *Store
+	testStore    Store
 	randomEntity randomx.Random
 )
 
