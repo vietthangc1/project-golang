@@ -11,7 +11,7 @@ import (
 
 var (
 	wordLength          = 6
-	hasedPasswordLength = 36
+	passwordLength = 36
 	emailLength         = 10
 	emailDomainLength   = 5
 )
@@ -28,16 +28,20 @@ func GenerateEmail() string {
 	return fmt.Sprintf("%s@%s.com", randomEntity.RandomString(emailLength), randomEntity.RandomString(emailDomainLength))
 }
 
-func GenerateHasedPassword() string {
-	return randomEntity.RandomString(hasedPasswordLength)
+func GeneratePassword() string {
+	return randomEntity.RandomString(passwordLength)
 }
 
 func createRandomUser(t *testing.T) User {
+	password := GeneratePassword()
+	hashedPassword, err := passwordManager.HashPassword(password)
+	require.NoError(t, err)
+
 	arg := CreateUserParams{
 		Username:       GenerateUsername(),
 		FullName:       GenerateFullname(),
 		Email:          GenerateEmail(),
-		HashedPassword: GenerateHasedPassword(),
+		HashedPassword: hashedPassword,
 	}
 	user, err := testQueries.CreateUser(context.Background(), arg)
 
@@ -52,6 +56,9 @@ func createRandomUser(t *testing.T) User {
 	require.True(t, user.PasswordChangedAt.IsZero())
 	require.NotZero(t, user.CreatedAt)
 
+	err = passwordManager.CheckPassword(password, hashedPassword)
+	require.NoError(t, err)
+	
 	return user
 }
 
