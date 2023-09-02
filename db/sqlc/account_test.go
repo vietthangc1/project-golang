@@ -9,14 +9,9 @@ import (
 )
 
 var (
-	ownerLength  = 6
 	minBalance int64 = 1000
 	maxBalance int64 = 10000
 )
-
-func GenerateAccountOwner() string {
-	return randomEntity.RandomString(ownerLength)
-}
 
 func GenerateAccountBalance() int64 {
 	return randomEntity.RandomInt(minBalance, maxBalance)
@@ -27,8 +22,10 @@ func GenerateCurrency() string {
 }
 
 func createRandomAccount(t *testing.T) Account {
+	user := createRandomUser(t)
+
 	arg := CreateAccountParams{
-		Owner: GenerateAccountOwner(),
+		Owner: user.Username,
 		Balance: GenerateAccountBalance(),
 		Currency: GenerateCurrency(),
 	}

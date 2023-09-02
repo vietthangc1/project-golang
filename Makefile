@@ -17,6 +17,14 @@ migratedown:
 	migrate -path migration -database $(POSTGRES_URI) --verbose down
 	migrate -path migration -database $(POSTGRES_URI_DEV) --verbose down
 
+migrateup1:
+	migrate -path migration -database $(POSTGRES_URI) --verbose up
+	migrate -path migration -database $(POSTGRES_URI_DEV) --verbose up
+
+migratedown1:
+	migrate -path migration -database $(POSTGRES_URI) --verbose down 1
+	migrate -path migration -database $(POSTGRES_URI_DEV) --verbose down 1
+
 sqlc:
 	sqlc generate
 
@@ -28,3 +36,6 @@ test:
 
 lint:
 	golangci-lint run --timeout 10m
+
+mock:
+	mockgen --destination=./db/mock/store.go --package=mockdb  github.com/vietthangc1/simple_bank/db/sqlc Store
