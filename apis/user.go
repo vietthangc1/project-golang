@@ -1,6 +1,8 @@
 package apis
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 	"time"
 
@@ -65,6 +67,65 @@ func (s *Server) createUser(ctx *gin.Context) {
 		FullName:  user.FullName,
 		Email:     user.Email,
 		CreatedAt: user.CreatedAt,
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+var (
+	ErrWrongUsernamePassword = errors.New("wrong username or password")
+)
+
+type loginUserRequest struct {
+	Username string `json:"user_name" binding:"required,alphanum"`
+	Password string `json:"password" binding:"required,min=6"`
+}
+
+type loginUserResponse struct {
+	Username    string    `json:"user_name"`
+	FullName    string    `json:"full_name"`
+	Email       string    `json:"email"`
+	CreatedAt   time.Time `json:"created_at"`
+	AccessToken string    `json:"access_token"`
+}
+
+func (s *Server) loginUser(ctx *gin.Context) {
+	var req loginUserRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	user, err := s.store.GetUserByUsername(ctx, req.Username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusBadRequest, errorResponse(ErrWrongUsernamePassword))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	passwordManager := passwordx.NewPassword(int(envx.Int("BYCRYPT_COST", 10)))
+	err = passwordManager.CheckPassword(req.Password, user.HashedPassword)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(ErrWrongUsernamePassword))
+		return
+	}
+
+	accessToken, err := s.token.CreateToken(user.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	resp := loginUserResponse{
+		Username:    user.Username,
+		FullName:    user.FullName,
+		Email:       user.Email,
+		CreatedAt:   user.CreatedAt,
+		AccessToken: accessToken,
 	}
 
 	ctx.JSON(http.StatusOK, resp)

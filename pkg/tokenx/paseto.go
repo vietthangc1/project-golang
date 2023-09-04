@@ -10,10 +10,12 @@ import (
 type PasetoImpl struct {
 	paseto *paseto.V2
 	symmetricKey string
+	duration time.Duration
 }
 
 func NewPasetoImpl(
 	symmetricKey string,
+	duration time.Duration,
 ) (Token, error) {
 	if len(symmetricKey) != 32 {
 		return nil, fmt.Errorf("symmetric key length must be 32, got %d", len(symmetricKey))
@@ -21,11 +23,12 @@ func NewPasetoImpl(
 	return &PasetoImpl{
 		paseto: paseto.NewV2(),
 		symmetricKey: symmetricKey,
+		duration: duration,
 	}, nil
 }
 
-func (p *PasetoImpl) CreateToken(username string, duration time.Duration) (string, error) {
-	payload, err := NewPayload(username, duration)
+func (p *PasetoImpl) CreateToken(username string) (string, error) {
+	payload, err := NewPayload(username, p.duration)
 	if err != nil {
 		return "", err
 	}

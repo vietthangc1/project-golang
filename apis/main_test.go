@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	db "github.com/vietthangc1/simple_bank/db/sqlc"
 	"github.com/vietthangc1/simple_bank/pkg/envx"
 	"github.com/vietthangc1/simple_bank/pkg/passwordx"
 	"github.com/vietthangc1/simple_bank/pkg/randomx"
@@ -23,4 +24,8 @@ func TestMain(m *testing.M) {
 	passwordManager = passwordx.NewPassword(int(bycryptCost))
 
 	os.Exit(m.Run())
+}
+
+func NewTestServer(t *testing.T, store db.Store) *Server {
+	return NewServer(store)
 }

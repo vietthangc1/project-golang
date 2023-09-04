@@ -10,16 +10,16 @@ import (
 func TestPasteoTokenOk(t *testing.T) {
 	r := require.New(t)
 	secretKey := randomManager.RandomString(32)
-
-	pasteoManager, err := NewPasetoImpl(secretKey)
+	duration := time.Minute
+	
+	pasteoManager, err := NewPasetoImpl(secretKey, duration)
 	r.NoError(err)
 
 	username := randomManager.RandomString(8)
 	issuedAt := time.Now()
-	duration := time.Minute
 	expiredAt := issuedAt.Add(duration)
 
-	token, err := pasteoManager.CreateToken(username, duration)
+	token, err := pasteoManager.CreateToken(username)
 	r.NoError(err)
 	r.NotEmpty(token)
 

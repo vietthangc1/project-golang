@@ -10,17 +10,18 @@ import (
 
 func TestJWTokenOk(t *testing.T) {
 	r := require.New(t)
-	secretKey := "testmainsecret"
 
-	jwtTokenManager, err := NewJWTImpl(secretKey)
+	secretKey := "testmainsecret"
+	duration := time.Minute
+
+	jwtTokenManager, err := NewJWTImpl(secretKey, duration)
 	r.NoError(err)
 
 	username := randomManager.RandomString(8)
 	issuedAt := time.Now()
-	duration := time.Minute
 	expiredAt := issuedAt.Add(duration)
 
-	token, err := jwtTokenManager.CreateToken(username, duration)
+	token, err := jwtTokenManager.CreateToken(username)
 	r.NoError(err)
 	r.NotEmpty(token)
 
@@ -37,14 +38,14 @@ func TestJWTokenOk(t *testing.T) {
 func TestJWTokenExpired(t *testing.T) {
 	r := require.New(t)
 	secretKey := "testmainsecret"
+	duration := time.Minute
 
-	jwtTokenManager, err := NewJWTImpl(secretKey)
+	jwtTokenManager, err := NewJWTImpl(secretKey, -duration)
 	r.NoError(err)
 
 	username := randomManager.RandomString(8)
-	duration := time.Minute
 
-	token, err := jwtTokenManager.CreateToken(username, -duration)
+	token, err := jwtTokenManager.CreateToken(username)
 	r.NoError(err)
 	r.NotEmpty(token)
 
@@ -69,7 +70,7 @@ func TestJWTokenNoHeaderVerify(t *testing.T) {
 	tokenString, err := token.SignedString(secretKey)
 	r.NoError(err)
 		
-	jwtTokenManager, err := NewJWTImpl(secretKey)
+	jwtTokenManager, err := NewJWTImpl(secretKey, duration)
 	r.NoError(err)
 
 	payload, err = jwtTokenManager.VerifyToken(tokenString)

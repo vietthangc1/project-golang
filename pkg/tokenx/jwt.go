@@ -15,19 +15,24 @@ var (
 
 type JWTImpl struct {
 	secretKey string
+	duration time.Duration
 }
 
-func NewJWTImpl(secretKey string) (Token, error) {
+func NewJWTImpl(
+	secretKey string,
+	duration time.Duration,
+) (Token, error) {
 	if len(secretKey) < int(minSecretKeyLength) {
 		return nil, fmt.Errorf("secret key must be at least %d chracters", minSecretKeyLength)
 	}
 	return &JWTImpl{
 		secretKey: secretKey,
+		duration: duration,
 	}, nil
 }
 
-func (j *JWTImpl) CreateToken(username string, duration time.Duration) (string, error) {
-	payload, err := NewPayload(username, duration)
+func (j *JWTImpl) CreateToken(username string) (string, error) {
+	payload, err := NewPayload(username, j.duration)
 	if err != nil {
 		return "", err
 	}
