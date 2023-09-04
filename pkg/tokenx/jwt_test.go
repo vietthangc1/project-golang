@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTokenOk(t *testing.T) {
+func TestJWTokenOk(t *testing.T) {
 	r := require.New(t)
 	secretKey := "testmainsecret"
 
@@ -34,7 +34,7 @@ func TestTokenOk(t *testing.T) {
 	r.WithinDuration(issuedAt, payload.IssuedAt, time.Second)
 }
 
-func TestTokenExpired(t *testing.T) {
+func TestJWTokenExpired(t *testing.T) {
 	r := require.New(t)
 	secretKey := "testmainsecret"
 
@@ -55,7 +55,7 @@ func TestTokenExpired(t *testing.T) {
 	r.Nil(payload)
 }
 
-func TestTokenNoHeaderVerify(t *testing.T) {
+func TestJWTokenNoHeaderVerify(t *testing.T) {
 	r := require.New(t)
 
 	username := randomManager.RandomString(8)
