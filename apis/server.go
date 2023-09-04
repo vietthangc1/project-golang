@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	tokenSymmetrickey = envx.String("TOKEN_SECRET_KEY", "")
+	tokenSymmetrickey = envx.String("TOKEN_SECRET_KEY", "12331231231231231231231233123312")
 	tokenDuration     = envx.String("TOKEN_DURATION", "24h")
 )
 
